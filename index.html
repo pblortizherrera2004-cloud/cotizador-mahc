@@ -238,12 +238,14 @@ async function descargarPDF(){
   const name=('Cotizacion'+($('titulo').value.trim()?' - '+$('titulo').value.trim():' MAHC SpA')).replace(/[\\/:*?"<>|]/g,'');
   const blob=doc.output('blob');
   const file=new File([blob],name+'.pdf',{type:'application/pdf'});
-  if(navigator.canShare&&navigator.canShare({files:[file]})){
-    try{await navigator.share({files:[file]})}catch(e){}
-    return;
-  }
   const ios=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
-  if(ios){window.open(URL.createObjectURL(blob),'_blank');return}
+  if(ios){
+    if(navigator.canShare&&navigator.canShare({files:[file]})){
+      try{await navigator.share({files:[file]})}catch(e){}
+      return;
+    }
+    window.open(URL.createObjectURL(blob),'_blank');return;
+  }
   doc.save(name+'.pdf');
 }
 </script>
